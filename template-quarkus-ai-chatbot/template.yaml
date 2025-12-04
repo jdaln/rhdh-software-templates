@@ -59,7 +59,7 @@ spec:
           title: LLM API Base URL
           type: string
           description: The base URL for the OpenAI-compatible LLM API
-          default: https://deepseek-r1-qwen-14b-w4a16-maas-apicast-production.apps.prod.rhoai.rh-aiservices-bu.com:443
+          default: https://deepseek-r1-qwen-14b-w4a16-maas-apicast-production.apps.prod.rhoai.rh-aiservices-bu.com/v1
         llm_api_key:
           title: LLM API Key
           type: string
@@ -128,9 +128,9 @@ spec:
               title: Repo Host
               type: string
               description: Your SCM host
-              default: gitlab-gitlab.apps.cluster-qhv8j.qhv8j.sandbox3609.opentlc.com
+              default: gitlab-gitlab.apps.cluster-khqtq.khqtq.sandbox4789.opentlc.com
               enum:
-                - gitlab-gitlab.apps.cluster-qhv8j.qhv8j.sandbox3609.opentlc.com
+                - gitlab-gitlab.apps.cluster-khqtq.khqtq.sandbox4789.opentlc.com
 
   steps:
     - id: template
