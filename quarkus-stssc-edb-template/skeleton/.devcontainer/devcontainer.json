@@ -1,0 +1,41 @@
+{
+  "name": "Quarkus with PostgreSQL",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "development-tooling",
+  "workspaceFolder": "/projects",
+  "shutdownAction": "stopCompose",
+  
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "redhat.java",
+        "vscjava.vscode-java-pack",
+        "vmware.vscode-boot-dev-pack"
+      ],
+      "settings": {
+        "java.configuration.updateBuildConfiguration": "automatic"
+      }
+    }
+  },
+
+  "forwardPorts": [8080, 5005, 5432],
+  "portsAttributes": {
+    "8080": {
+      "label": "Quarkus Dev",
+      "onAutoForward": "notify"
+    },
+    "5005": {
+      "label": "Debug",
+      "onAutoForward": "silent"
+    },
+    "5432": {
+      "label": "PostgreSQL",
+      "onAutoForward": "silent"
+    }
+  },
+
+  "postCreateCommand": "echo 'Dev container ready! Run: ./mvnw compile quarkus:dev'",
+  
+  "remoteUser": "user"
+}
+

@@ -1,0 +1,26 @@
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: ${{ values.name }}-gitops
+  description: ${{ values.description}} - GitOps repository and deployment configuration
+  links:
+    - url: https://www.redhat.com/en/solutions/trusted-software-supply-chain
+      title: Trusted Secure Supply Chain
+      icon: dashboard
+      type: admin-dashboard
+  annotations:
+    argocd/app-selector: tssc/gitops=${{  values.name  }}
+    backstage.io/kubernetes-id: ${{ values.name }}
+    backstage.io/techdocs-ref: dir:.
+    janus-idp.io/tekton: ${{ values.name }}
+  tags:
+    - gitops
+    - argocd
+spec:
+  type: gitops
+  owner: ${{ values.owner }}
+  system: ${{ values.name }}-system
+  lifecycle: experimental
+  dependsOn:
+    - component:${{ values.name }}
+    - resource:${{ values.name }}-postgresql

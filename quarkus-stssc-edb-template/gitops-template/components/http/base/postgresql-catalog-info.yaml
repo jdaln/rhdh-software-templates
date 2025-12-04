@@ -1,0 +1,30 @@
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: ${{ values.name }}-postgresql
+  description: PostgreSQL database cluster managed by EDB Postgres for Kubernetes Operator 1.27.1
+  annotations:
+    backstage.io/kubernetes-id: ${{ values.name }}-postgresql
+    backstage.io/kubernetes-namespace: ${{ values.namespace }}
+    postgresql.k8s.enterprisedb.io/cluster: ${{ values.name }}-postgresql
+    postgresql.k8s.enterprisedb.io/operator-version: "1.27.1"
+    postgresql.k8s.enterprisedb.io/instances: "1"
+    postgresql.k8s.enterprisedb.io/storage-size: "1Gi"
+    postgresql.k8s.enterprisedb.io/storage-class: "ocs-external-storagecluster-ceph-rbd"
+  tags:
+    - postgresql
+    - database
+    - edb
+    - managed-service
+    - kubernetes-resource
+  links:
+    - url: https://www.enterprisedb.com/docs/kubernetes/
+      title: EDB Postgres for Kubernetes Documentation
+      icon: documentation
+spec:
+  type: database
+  owner: ${{ values.owner }}
+  system: ${{ values.name }}-system
+  lifecycle: production
+

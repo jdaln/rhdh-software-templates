@@ -1,0 +1,44 @@
+apiVersion: postgresql.k8s.enterprisedb.io/v1
+kind: Cluster
+metadata:
+  name: ${{ values.name }}-postgresql
+  labels:
+    app.kubernetes.io/instance: ${{ values.name }}
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: ${{ values.name }}-postgresql
+    app.kubernetes.io/part-of: ${{ values.appName }}
+spec:
+  instances: 1
+  postgresql:
+    parameters:
+      max_connections: "20"
+      shared_buffers: "64MB"
+      effective_cache_size: "256MB"
+      maintenance_work_mem: "16MB"
+      checkpoint_completion_target: "0.9"
+      wal_buffers: "4MB"
+      default_statistics_target: "50"
+      random_page_cost: "1.1"
+      effective_io_concurrency: "100"
+      work_mem: "2MB"
+      min_wal_size: "80MB"
+      max_wal_size: "256MB"
+  bootstrap:
+    initdb:
+      database: ${{ values.name }}
+      owner: ${{ values.name }}
+      secret:
+        name: ${{ values.name }}-postgresql-credentials
+  storage:
+    size: 1Gi
+    storageClass: ocs-external-storagecluster-ceph-rbd
+  resources:
+    requests:
+      cpu: "50m"
+      memory: "128Mi"
+    limits:
+      cpu: "200m"
+      memory: "256Mi"
+  monitoring:
+    enabled: false
+

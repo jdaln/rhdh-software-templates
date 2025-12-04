@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:  
+    tad.gitops.set/image: ".spec.template.spec.containers[0].image"
+    tad.gitops.get/image: ".spec.template.spec.containers[0].image"
+    tad.gitops.set/replicas: ".spec.replicas"
+    tad.gitops.get/replicas: ".spec.replicas" 
+  labels: 
+    app.kubernetes.io/instance: ${{ values.name }}
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name:  ${{ values.name }}
+    app.kubernetes.io/part-of: ${{ values.appName }}  
+  name: ${{ values.name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance:  ${{ values.name }} 
+  template:
+    metadata: 
+      labels:
+        app.kubernetes.io/instance:  ${{ values.name }}
+    spec:
+      containers:
+      - image: ${{ values.image }}
+        imagePullPolicy: Always
+        livenessProbe:
+          httpGet:
+            path: /q/health/live
+            port: ${{ values.port }} 
+          initialDelaySeconds: 60
+          periodSeconds: 15
+          timeoutSeconds: 5
+          failureThreshold: 3
+        name: container-image
+        ports:
+        - containerPort: ${{ values.port }} 
+        readinessProbe:
+          httpGet:
+            path: /q/health/ready
+            port: ${{ values.port }}
+          initialDelaySeconds: 60
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3 
+        resources:
+          limits:
+            cpu: "500m"
+            memory: 768Mi
+          requests:
+            cpu: 10m
+            memory: 128Mi    
+        env:
+        - name: GIT_REPO
+          value: ${{ values.repoURL }}
+        - name: QUARKUS_DATASOURCE_DB_KIND
+          value: postgresql
+        - name: QUARKUS_DATASOURCE_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: ${{ values.name }}-postgresql-credentials
+              key: username
+        - name: QUARKUS_DATASOURCE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: ${{ values.name }}-postgresql-credentials
+              key: password
+        - name: QUARKUS_DATASOURCE_JDBC_URL
+          value: jdbc:postgresql://${{ values.name }}-postgresql-rw:5432/${{ values.name }}
+        - name: QUARKUS_DATASOURCE_REACTIVE_URL
+          value: postgresql://${{ values.name }}-postgresql-rw:5432/${{ values.name }}
+        - name: JAVA_MAX_MEM_RATIO
+          value: "70"
+        - name: JAVA_INITIAL_MEM_RATIO
+          value: "25"
+        - name: GC_CONTAINER_OPTIONS
+          value: "-XX:+UseG1GC -XX:MaxGCPauseMillis=200"
+        - name: GC_MAX_METASPACE_SIZE
+          value: "128"
+      imagePullSecrets:
+        - name: tssc-image-registry-auth
